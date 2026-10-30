@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Secret Hitler — Online</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#e8dcc0;--paper:#f6eedb;--ink:#201c15;--muted:#6b624e;--line:#bfae86;
+  --lib:#2c76a6;--libd:#164766;--fas:#d2562a;--fasd:#8a2a10;--hit:#2a2420;--ok:#2f8a57;--bad:#b3392b;--gold:#c9a227;
+  color-scheme:light;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#14120e;--paper:#201c16;--ink:#efe6cf;--muted:#a79d86;--line:#463f2f;--lib:#4a9bd0;--libd:#a9d4ee;--fas:#ee7143;--fasd:#f3b39b;--hit:#0d0b09;color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#14120e;--paper:#201c16;--ink:#efe6cf;--muted:#a79d86;--line:#463f2f;--lib:#4a9bd0;--libd:#a9d4ee;--fas:#ee7143;--fasd:#f3b39b;--hit:#0d0b09;color-scheme:dark;}
+html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 Georgia,'Times New Roman',serif;min-height:100vh;
+  background-image:radial-gradient(circle at 20% 10%,rgba(255,255,255,.07),transparent 40%),repeating-linear-gradient(45deg,transparent 0 6px,rgba(0,0,0,.025) 6px 7px)}
+.wrap{max-width:600px;margin:0 auto;padding:12px 12px 40px}
+h1,h2,h3,.disp{font-family:'Oswald','Arial Narrow',Impact,sans-serif;text-transform:uppercase;letter-spacing:.04em;margin:0}
+h1{font-size:34px;line-height:1}
+h2{font-size:20px}h3{font-size:15px;color:var(--muted)}
+.card{background:var(--paper);border:2px solid var(--ink);border-radius:10px;padding:12px;margin:12px 0;box-shadow:3px 3px 0 var(--ink)}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.grow{flex:1}
+.muted{color:var(--muted)}.small{font-size:13px}.center{text-align:center}
+input[type=text],input[type=password]{width:100%;font:inherit;font-size:17px;padding:11px 12px;border:2px solid var(--ink);border-radius:8px;background:var(--bg);color:var(--ink);margin:4px 0 10px}
+label{font-family:'Oswald','Arial Narrow',sans-serif;text-transform:uppercase;letter-spacing:.06em;font-size:13px;color:var(--muted)}
+button{font:inherit;font-family:'Oswald','Arial Narrow',Impact,sans-serif;text-transform:uppercase;letter-spacing:.06em;font-size:16px;padding:11px 16px;border:2px solid var(--ink);border-radius:8px;background:var(--paper);color:var(--ink);cursor:pointer;box-shadow:2px 2px 0 var(--ink);touch-action:manipulation}
+button:active{transform:translate(2px,2px);box-shadow:none}
+button.pri{background:var(--fas);color:#fff;border-color:var(--hit)}
+button.lib{background:var(--lib);color:#fff}
+button.ghost{background:transparent;box-shadow:none;border-style:dashed}
+button:disabled{opacity:.45;cursor:not-allowed}
+.err{color:var(--bad);font-weight:bold;margin:6px 0}
+.banner{text-align:center;padding:8px;border:2px solid var(--ink);border-radius:8px;background:var(--bg);margin:8px 0}
+.logo{text-align:center;padding:14px 0 4px}
+.logo .sub{font-family:'Oswald',sans-serif;letter-spacing:.3em;font-size:12px;color:var(--muted);text-transform:uppercase}
+.logo h1 span{color:var(--fas)}
+
+/* Boards */
+.track{display:grid;gap:6px;margin-top:6px}
+.track.l5{grid-template-columns:repeat(5,1fr)}.track.f6{grid-template-columns:repeat(6,1fr)}
+.slot{aspect-ratio:5/7;border:2px dashed var(--line);border-radius:6px;display:flex;align-items:center;justify-content:center;position:relative;color:var(--muted);overflow:hidden}
+.slot.on{border:2px solid var(--ink);border-style:solid}
+.slot svg,.slot img{width:78%;height:auto}
+.slot.on svg,.slot.on img{width:100%;height:100%}
+.slot .n{position:absolute;top:2px;left:4px;font:700 11px 'Oswald',sans-serif;opacity:.7}
+.boardL{border-color:var(--libd)}.boardF{border-color:var(--fasd)}
+.cap{font:12px 'Oswald',sans-serif;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-top:4px;min-height:1.2em}
+.dots{display:flex;gap:8px;align-items:center}
+.dot{width:20px;height:20px;border-radius:50%;border:2px solid var(--ink);background:transparent}
+.dot.on{background:var(--gold)}
+
+/* Tiles & cards */
+.tile{aspect-ratio:5/7;border-radius:8px;overflow:hidden;border:2px solid var(--ink);background:var(--paper)}
+.tile svg,.tile img{width:100%;height:100%;display:block;object-fit:cover}
+.hand{display:flex;gap:12px;justify-content:center;margin:12px 0}
+.hand .tile{width:min(30%,110px);cursor:pointer;transition:transform .12s}
+.hand .tile.sel{transform:translateY(-8px) scale(1.04);outline:4px solid var(--gold)}
+.rolecard{width:min(62vw,230px);margin:8px auto;aspect-ratio:5/7;border-radius:12px;overflow:hidden;border:3px solid var(--ink);box-shadow:4px 4px 0 var(--ink)}
+.rolecard svg,.rolecard img{width:100%;height:100%;display:block;object-fit:cover}
+.votecards{display:flex;gap:14px;justify-content:center;margin:10px 0}
+.votecards button{width:42%;max-width:190px;aspect-ratio:5/7;font-size:34px;border-radius:12px;border-width:3px;padding:0;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.votecards .ja{background:var(--ok);color:#fff}.votecards .nein{background:var(--bad);color:#fff}
+.votecards img{width:100%;height:100%;object-fit:cover}
+
+/* Players */
+.players{display:grid;grid-template-columns:repeat(auto-fill,minmax(138px,1fr));gap:8px}
+.pl{border:2px solid var(--ink);border-radius:8px;padding:7px 9px;background:var(--bg);position:relative;text-align:left;box-shadow:none;text-transform:none;letter-spacing:0;font-family:inherit;font-size:15px}
+.pl .nm{font-weight:bold;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
+.pl .tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:3px;min-height:18px}
+.tag{font:700 10px 'Oswald',sans-serif;text-transform:uppercase;letter-spacing:.05em;border-radius:4px;padding:1px 5px;border:1.5px solid var(--ink);background:var(--paper)}
+.tag.p{background:var(--gold);color:#201c15}.tag.c{background:var(--lib);color:#fff}.tag.f{background:var(--fas);color:#fff}.tag.h{background:var(--hit);color:#fff}
+.tag.me{background:var(--ink);color:var(--paper)}.tag.ok{background:var(--ok);color:#fff}
+.pl:disabled{color:var(--ink);opacity:1;cursor:default}.pl.off:disabled{opacity:.45}.pl.dead:disabled{opacity:.5}
+.pl.dead{opacity:.5}.pl.dead .nm{text-decoration:line-through}
+.pl.pick{cursor:pointer;border-color:var(--gold);box-shadow:0 0 0 2px var(--gold)}
+.pl.sel{background:var(--gold);color:#201c15}
+.pl.off{opacity:.45}
+.log{max-height:190px;overflow:auto;font-size:14px;border-top:1px dashed var(--line);margin-top:6px;padding-top:6px}
+.log div{padding:2px 0;border-bottom:1px dotted var(--line)}
+
+/* Modal */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50;padding-top:calc(16px + env(safe-area-inset-top,0px));padding-bottom:calc(16px + env(safe-area-inset-bottom,0px))}
+.modal .card{max-width:480px;width:100%;max-height:92vh;overflow:auto;margin:0}
+.vgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin:8px 0}
+.vv{display:flex;justify-content:space-between;border:2px solid var(--ink);border-radius:6px;padding:5px 8px;font-size:14px}
+.vv.ja{background:var(--ok);color:#fff}.vv.nein{background:var(--bad);color:#fff}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:8px;z-index:60;max-width:90vw;font-size:15px;text-align:center}
+.win{font-size:28px;text-align:center;padding:14px;border-radius:10px;color:#fff;border:3px solid var(--ink)}
+.win.liberal{background:var(--lib)}.win.fascist{background:var(--fas)}
+.foot{font-size:11px;color:var(--muted);text-align:center;margin-top:24px;line-height:1.5}
+.foot a{color:inherit}
+.slotrow{display:flex;gap:8px;align-items:center;border-bottom:1px dotted var(--line);padding:6px 0}
+.slotrow img{width:34px;height:48px;object-fit:cover;border-radius:3px;border:1px solid var(--ink)}
+.slotrow .nm{flex:1;font-size:14px}
+.slotrow input{display:none}
+.slotrow label.btn{cursor:pointer;border:2px solid var(--ink);border-radius:6px;padding:4px 9px;color:var(--ink)}
+@media (max-width:380px){h1{font-size:28px}.wrap{padding:8px 8px 40px}.card{padding:10px}button{padding:10px 12px}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<div id="overlay"></div>
+<div id="toast"></div>
+
+<script>
+/* ===== Secret Hitler rules engine (host-authoritative, pure JS) ===== */
+const SH = (() => {
+  const SPLIT = { 5:[3,1], 6:[4,1], 7:[4,2], 8:[5,2], 9:[5,3], 10:[6,3] }; // [liberals, plain fascists] (+ Hitler)
+  const POWERS = {
+    s: [null, null, 'peek', 'execute', 'execute'],
+    m: [null, 'investigate', 'special', 'execute', 'execute'],
+    l: ['investigate', 'investigate', 'special', 'execute', 'execute']
+  };
+  const powerTrack = n => n <= 6 ? POWERS.s : n <= 8 ? POWERS.m : POWERS.l;
+  const powerFor = (n, f) => powerTrack(n)[f - 1] || null;
+
+  function shuffle(a, rnd) {
+    a = a.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(rnd() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+  const nm = (G, p) => (G.S.names[p] || 'Someone');
+  const alive = S => S.seats.filter(p => !S.dead.includes(p));
+  function log(G, msg) { G.S.log.unshift(msg); if (G.S.log.length > 60) G.S.log.length = 60; }
+  function sync(G) { G.S.drawN = G.E.deck.length; G.S.discN = G.E.discard.length; }
+
+  function newGame(seatIds, names, rnd) {
+    rnd = rnd || Math.random;
+    const n = seatIds.length;
+    if (!SPLIT[n]) throw new Error('Need 5–10 players');
+    const [nl, nf] = SPLIT[n];
+    const seats = shuffle(seatIds, rnd);
+    const rl = shuffle([...Array(nl).fill('L'), ...Array(nf).fill('F'), 'H'], rnd);
+    const E = { roles: {}, deck: shuffle([...Array(6).fill('L'), ...Array(11).fill('F')], rnd),
+      discard: [], hand: [], peek: null, inv: null, votes: {}, base: Math.floor(rnd() * n), rnd: 0 };
+    seats.forEach((p, i) => { E.roles[p] = rl[i]; });
+    const S = { phase: 'play', seats, names: Object.assign({}, names), dead: [], stage: 'nominate',
+      pres: seats[E.base], nominee: null, chan: null, voted: [], tracker: 0, libs: 0, fasc: 0,
+      prev: null, inel: [], inv: [], notH: [], lastVote: null, lastPolicy: null, vetoOpen: false,
+      vetoDenied: false, ackKind: null, winner: null, why: '', roles: null, log: [], rev: 0,
+      voteId: 0, polN: 0, drawN: 17, discN: 0, special: false, acks: {} };
+    const G = { S, E, rnd };
+    log(G, 'The game begins. ' + nm(G, S.pres) + ' is the first President.');
+    S.inel = inelig(S);
+    sync(G);
+    return G;
+  }
+
+  function inelig(S) {
+    const r = [S.pres];
+    if (S.prev) {
+      r.push(S.prev.chan);
+      if (alive(S).length > 5) r.push(S.prev.pres);
+    }
+    return r.filter((p, i) => r.indexOf(p) === i);
+  }
+
+  function draw(G, k) {
+    const { E } = G;
+    if (E.deck.length < 3) {
+      E.deck = shuffle(E.deck.concat(E.discard), G.rnd || Math.random);
+      E.discard = [];
+      log(G, 'The policy deck was reshuffled.');
+    }
+    return E.deck.splice(0, k);
+  }
+
+  function end(G, winner, why) {
+    const { S, E } = G;
+    S.phase = 'over'; S.stage = 'over'; S.winner = winner; S.why = why;
+    S.roles = Object.assign({}, E.roles);
+    S.nominee = S.nominee; E.hand = []; E.peek = null; E.inv = null;
+    log(G, (winner === 'liberal' ? 'LIBERALS WIN — ' : 'FASCISTS WIN — ') + why + '.');
+  }
+
+  function nextRound(G, forced) {
+    const { S, E } = G;
+    S.chan = null; S.nominee = null; S.voted = []; E.votes = {}; E.hand = []; E.peek = null; E.inv = null;
+    S.vetoOpen = false; S.vetoDenied = false; S.ackKind = null;
+    if (forced) { S.pres = forced; S.special = true; }
+    else {
+      const n = S.seats.length; let i = E.base;
+      do { i = (i + 1) % n; } while (S.dead.includes(S.seats[i]));
+      E.base = i; S.pres = S.seats[i]; S.special = false;
+    }
+    S.stage = 'nominate';
+    S.inel = inelig(S);
+    log(G, nm(G, S.pres) + ' is now President' + (forced ? ' (special election).' : '.'));
+  }
+
+  function enact(G, card, chaos) {
+    const { S } = G;
+    if (card === 'L') S.libs++; else S.fasc++;
+    S.tracker = 0;
+    S.lastPolicy = { card, chaos: !!chaos, n: ++S.polN };
+    log(G, 'A ' + (card === 'L' ? 'Liberal' : 'Fascist') + ' policy was enacted' + (chaos ? ' by the people.' : '.'));
+    if (S.libs >= 5) return end(G, 'liberal', 'Five Liberal policies were enacted');
+    if (S.fasc >= 6) return end(G, 'fascist', 'Six Fascist policies were enacted');
+    if (card === 'F' && !chaos) {
+      const pw = powerFor(S.seats.length, S.fasc);
+      if (pw) return startPower(G, pw);
+    }
+    nextRound(G);
+  }
+
+  function startPower(G, pw) {
+    const { S, E } = G;
+    if (pw === 'peek') {
+      if (E.deck.length < 3) { E.deck = shuffle(E.deck.concat(E.discard), G.rnd || Math.random); E.discard = []; log(G, 'The policy deck was reshuffled.'); }
+      E.peek = E.deck.slice(0, 3); S.stage = 'ack'; S.ackKind = 'peek';
+      log(G, nm(G, S.pres) + ' secretly looks at the top three policies.');
+    } else {
+      S.stage = pw; // investigate | special | execute
+      log(G, nm(G, S.pres) + ' gains a presidential power: ' + pw + '.');
+    }
+  }
+
+  function chaos(G) {
+    const { S } = G;
+    log(G, 'Three failed elections — the country is thrown into chaos!');
+    const card = draw(G, 1)[0];
+    S.prev = null;
+    enact(G, card, true);
+  }
+
+  function failGov(G) {
+    const { S } = G;
+    S.tracker++;
+    if (S.tracker >= 3) chaos(G); else nextRound(G);
+  }
+
+  function resolveVote(G) {
+    const { S, E } = G;
+    const votes = Object.assign({}, E.votes);
+    const ja = Object.values(votes).filter(v => v === 'ja').length;
+    const nein = Object.values(votes).length - ja;
+    const passed = ja > nein;
+    S.lastVote = { id: ++S.voteId, pres: S.pres, chan: S.nominee, votes, ja, nein, passed };
+    if (passed) {
+      S.chan = S.nominee;
+      S.prev = { pres: S.pres, chan: S.chan };
+      log(G, 'Government elected ' + ja + '–' + nein + ': ' + nm(G, S.pres) + ' (President) & ' + nm(G, S.chan) + ' (Chancellor).');
+      if (S.fasc >= 3) {
+        if (E.roles[S.chan] === 'H') return end(G, 'fascist', nm(G, S.chan) + ' was Hitler and was elected Chancellor');
+        if (!S.notH.includes(S.chan)) S.notH.push(S.chan);
+      }
+      E.votes = {};
+      E.hand = draw(G, 3);
+      S.stage = 'pres_discard';
+    } else {
+      log(G, 'Government rejected ' + ja + '–' + nein + ': ' + nm(G, S.pres) + ' & ' + nm(G, S.nominee) + '. Election tracker advances.');
+      E.votes = {}; S.voted = [];
+      failGov(G);
+    }
+  }
+
+  // returns {ok:true} or {ok:false, err}
+  function act(G, pid, a) {
+    const { S, E } = G;
+    const bad = err => ({ ok: false, err });
+    if (S.phase !== 'play') return bad('Game is not in progress');
+    if (!S.seats.includes(pid)) return bad('Not a player');
+    if (S.dead.includes(pid)) return bad('You are dead');
+    const isAlive = p => S.seats.includes(p) && !S.dead.includes(p);
+    switch (a.t) {
+      case 'nominate': {
+        if (S.stage !== 'nominate' || pid !== S.pres) return bad('Not your move');
+        if (!isAlive(a.target) || S.inel.includes(a.target)) return bad('Ineligible');
+        S.nominee = a.target; S.voted = []; E.votes = {}; S.stage = 'vote';
+        log(G, nm(G, pid) + ' nominates ' + nm(G, a.target) + ' as Chancellor.');
+        break;
+      }
+      case 'vote': {
+        if (S.stage !== 'vote' || S.voted.includes(pid)) return bad('Cannot vote');
+        if (a.v !== 'ja' && a.v !== 'nein') return bad('Bad vote');
+        E.votes[pid] = a.v; S.voted.push(pid);
+        if (S.voted.length >= alive(S).length) resolveVote(G);
+        break;
+      }
+      case 'discard': {
+        if (S.stage === 'pres_discard' && pid === S.pres) {
+          if (!(a.i >= 0 && a.i < E.hand.length)) return bad('Bad card');
+          E.discard.push(E.hand.splice(a.i, 1)[0]);
+          S.stage = 'chan_discard'; S.vetoOpen = S.fasc >= 5; S.vetoDenied = false;
+          log(G, nm(G, pid) + ' passes two policies to ' + nm(G, S.chan) + '.');
+        } else if (S.stage === 'chan_discard' && pid === S.chan) {
+          if (!(a.i >= 0 && a.i < E.hand.length)) return bad('Bad card');
+          E.discard.push(E.hand.splice(a.i, 1)[0]);
+          const card = E.hand.splice(0, 1)[0];
+          enact(G, card, false);
+        } else return bad('Not your move');
+        break;
+      }
+      case 'veto': {
+        if (S.stage !== 'chan_discard' || pid !== S.chan || !S.vetoOpen || S.vetoDenied) return bad('No veto');
+        S.stage = 'veto';
+        log(G, nm(G, pid) + ' proposes a veto.');
+        break;
+      }
+      case 'vetoResp': {
+        if (S.stage !== 'veto' || pid !== S.pres) return bad('Not your move');
+        if (a.ok) {
+          E.discard.push(...E.hand); E.hand = [];
+          log(G, 'The veto was accepted. Both policies are discarded.');
+          failGov(G);
+        } else {
+          S.vetoDenied = true; S.stage = 'chan_discard';
+          log(G, nm(G, pid) + ' refuses the veto.');
+        }
+        break;
+      }
+      case 'ack': {
+        if (S.stage !== 'ack' || pid !== S.pres) return bad('Not your move');
+        nextRound(G);
+        break;
+      }
+      case 'investigate': {
+        if (S.stage !== 'investigate' || pid !== S.pres) return bad('Not your move');
+        const t = a.target;
+        if (!isAlive(t) || t === pid || S.inv.includes(t)) return bad('Invalid target');
+        S.inv.push(t); E.inv = { pid: t, party: E.roles[t] === 'L' ? 'L' : 'F' };
+        S.stage = 'ack'; S.ackKind = 'inv';
+        log(G, nm(G, pid) + ' investigates ' + nm(G, t) + '.');
+        break;
+      }
+      case 'special': {
+        if (S.stage !== 'special' || pid !== S.pres) return bad('Not your move');
+        const t = a.target;
+        if (!isAlive(t) || t === pid) return bad('Invalid target');
+        log(G, nm(G, pid) + ' calls a special election: ' + nm(G, t) + ' will be President.');
+        nextRound(G, t);
+        break;
+      }
+      case 'execute': {
+        if (S.stage !== 'execute' || pid !== S.pres) return bad('Not your move');
+        const t = a.target;
+        if (!isAlive(t) || t === pid) return bad('Invalid target');
+        S.dead.push(t);
+        log(G, nm(G, pid) + ' executes ' + nm(G, t) + '.');
+        if (E.roles[t] === 'H') { end(G, 'liberal', nm(G, t) + ' was Hitler and has been executed'); break; }
+        nextRound(G);
+        break;
+      }
+      default: return bad('Unknown action');
+    }
+    sync(G);
+    return { ok: true };
+  }
+
+  // Private per-player views (what each seat may secretly know right now)
+  function views(G) {
+    const { S, E } = G, out = {}, n = S.seats.length;
+    for (const p of S.seats) {
+      const r = E.roles[p];
+      const v = { role: r, mates: [], hand: null, peek: null, inv: null };
+      if (r === 'F' || (r === 'H' && n <= 6)) {
+        v.mates = S.seats.filter(q => q !== p && (E.roles[q] === 'F' || (r === 'F' && E.roles[q] === 'H')))
+          .map(q => ({ p: q, r: E.roles[q] }));
+      }
+      if (S.stage === 'pres_discard' && p === S.pres) v.hand = E.hand.slice();
+      if ((S.stage === 'chan_discard' || S.stage === 'veto') && p === S.chan) v.hand = E.hand.slice();
+      if (S.stage === 'ack' && p === S.pres) {
+        if (S.ackKind === 'peek') v.peek = (E.peek || []).slice();
+        if (S.ackKind === 'inv') v.inv = E.inv ? Object.assign({}, E.inv) : null;
+      }
+      out[p] = v;
+    }
+    return out;
+  }
+
+  return { newGame, act, views, powerFor, powerTrack, inelig, alive, SPLIT };
+})();
+
+
+</script>
+<script>
+(() => {
+'use strict';
+/* ================= helpers ================= */
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const lsGet = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
+const lsDel = k => { try { localStorage.removeItem(k); } catch (e) {} };
+const ST = { view: 'landing', gid: null, pid: null, name: '', pw: '', game: null, players: {}, priv: null,
+  art: {}, sel: null, pick: null, showRole: false, err: '', busy: false, modal: null, seenVote: null, seenPol: null,
+  first: true, isHost: false, hostPubKey: null, keys: null, canArt: false, spectator: false };
+let DB = null, USER = null, ASSETS = null, unsubs = [];
+const HOST = { G: null, q: [], busy: false, lastView: {}, keyCache: {}, botTimer: null };
+let myKeyCache = null, lastN = 0;
+
+/* ================= crypto (ECDH + AES-GCM) ================= */
+const subtle = (window.crypto && crypto.subtle) || null;
+const b64 = u8 => { let s = ''; for (let i = 0; i < u8.length; i++) s += String.fromCharCode(u8[i]); return btoa(s); };
+const unb64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+const ALG = { name: 'ECDH', namedCurve: 'P-256' };
+async function newKeys() {
+  if (!subtle) return { priv: null, pub: 'nocrypto' + Math.random().toString(36).slice(2) };
+  const kp = await subtle.generateKey(ALG, true, ['deriveKey']);
+  return { priv: kp.privateKey, pub: b64(new Uint8Array(await subtle.exportKey('raw', kp.publicKey))), jwk: await subtle.exportKey('jwk', kp.privateKey) };
+}
+async function loadKeys(gid, pid) {
+  const k = 'sh2:key:' + gid + ':' + pid, raw = lsGet(k);
+  if (raw && subtle) {
+    try { const o = JSON.parse(raw); return { priv: await subtle.importKey('jwk', o.jwk, ALG, true, ['deriveKey']), pub: o.pub, jwk: o.jwk }; } catch (e) {}
+  }
+  const nk = await newKeys();
+  if (nk.jwk) lsSet(k, JSON.stringify({ jwk: nk.jwk, pub: nk.pub }));
+  return nk;
+}
+async function sharedKey(priv, pubB64) {
+  if (!subtle) return null;
+  const pub = await subtle.importKey('raw', unb64(pubB64), ALG, true, []);
+  return subtle.deriveKey({ name: 'ECDH', public: pub }, priv, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+}
+async function seal(key, obj) {
+  const txt = JSON.stringify(obj);
+  if (!subtle) return 'P:' + btoa(unescape(encodeURIComponent(txt)));
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const ct = new Uint8Array(await subtle.encrypt({ name: 'AES-GCM', iv }, key, new TextEncoder().encode(txt)));
+  const out = new Uint8Array(12 + ct.length); out.set(iv); out.set(ct, 12);
+  return b64(out);
+}
+async function unseal(key, s) {
+  if (!subtle || s.startsWith('P:')) return JSON.parse(decodeURIComponent(escape(atob(s.slice(2)))));
+  const u = unb64(s);
+  const pt = await subtle.decrypt({ name: 'AES-GCM', iv: u.slice(0, 12) }, key, u.slice(12));
+  return JSON.parse(new TextDecoder().decode(pt));
+}
+async function hashPw(pw) {
+  const s = 'secret-hitler-online:' + pw.trim();
+  if (subtle) {
+    const h = new Uint8Array(await subtle.digest('SHA-256', new TextEncoder().encode(s)));
+    return 'g' + Array.from(h).map(x => x.toString(16).padStart(2, '0')).join('').slice(0, 28);
+  }
+  let h1 = 0xdeadbeef, h2 = 0x41c6ce57;
+  for (let i = 0; i < s.length; i++) { const c = s.charCodeAt(i); h1 = Math.imul(h1 ^ c, 2654435761); h2 = Math.imul(h2 ^ c, 1597334677); }
+  return 'g' + (h1 >>> 0).toString(16) + (h2 >>> 0).toString(16);
+}
+
+/* ================= artwork (built-in SVG + optional uploaded originals) ================= */
+const SLOTS = [
+  ['libPolicy', 'Liberal policy tile'], ['fasPolicy', 'Fascist policy tile'],
+  ['libRole', 'Liberal role card'], ['fasRole', 'Fascist role card'], ['hitRole', 'Hitler role card'],
+  ['libParty', 'Liberal party membership'], ['fasParty', 'Fascist party membership'],
+  ['ja', 'Ja! card'], ['nein', 'Nein! card']
+];
+const artImg = slot => ST.art && ST.art[slot] ? '<img alt="" src="/_blob/' + esc(ST.art[slot]) + '">' : null;
+const DOVE = c => '<g fill="' + c + '"><path d="M20 60C30 58 38 52 44 44C50 35 60 31 70 35L86 28L79 41C79 57 65 69 48 69C36 69 27 65 20 60Z"/><path d="M22 61L7 71L27 67Z"/></g><path d="M40 52C46 35 58 23 80 16C75 31 67 45 52 56Z" fill="' + c + '" opacity=".72"/><circle cx="71" cy="37" r="1.8" fill="#000"/>';
+const SKULL = c => '<g fill="' + c + '"><path d="M50 12C30 12 18 26 18 43C18 54 24 61 31 65L31 78L69 78L69 65C76 61 82 54 82 43C82 26 70 12 50 12Z"/></g><g fill="#000" opacity=".85"><ellipse cx="38" cy="44" rx="8" ry="9"/><ellipse cx="62" cy="44" rx="8" ry="9"/><path d="M50 52L44 64L56 64Z"/></g><g stroke="#000" stroke-width="2.4" opacity=".8"><path d="M39 70V78M50 70V78M61 70V78"/></g>';
+const HAT = c => '<g fill="' + c + '"><path d="M22 36L50 20L78 36L74 46L26 46Z"/><rect x="26" y="46" width="48" height="6"/><path d="M34 54H66V66C66 76 58 82 50 82C42 82 34 76 34 66Z"/><path d="M20 98C20 80 34 74 50 74C66 74 80 80 80 98Z"/></g><circle cx="50" cy="35" r="4" fill="#000" opacity=".6"/>';
+const EYE = '<path d="M6 24C16 8 40 8 50 24C40 40 16 40 6 24Z" fill="none" stroke="currentColor" stroke-width="4"/><circle cx="28" cy="24" r="8" fill="currentColor"/>';
+const ICONS = {
+  investigate: '<svg viewBox="0 0 56 48"><g>' + EYE + '</g></svg>',
+  peek: '<svg viewBox="0 0 56 48"><g fill="none" stroke="currentColor" stroke-width="3"><rect x="8" y="6" width="26" height="36" rx="3"/><rect x="18" y="10" width="26" height="36" rx="3" fill="var(--paper)"/></g></svg>',
+  special: '<svg viewBox="0 0 56 48"><path d="M28 4L34 18L50 19L38 29L42 44L28 36L14 44L18 29L6 19L22 18Z" fill="currentColor"/></svg>',
+  execute: '<svg viewBox="0 0 56 48"><g fill="none" stroke="currentColor" stroke-width="3.5"><circle cx="28" cy="24" r="14"/><path d="M28 2V14M28 34V46M6 24H18M38 24H50"/></g></svg>',
+  win: '<svg viewBox="0 0 100 100">' + SKULL('currentColor') + '</svg>'
+};
+function tileSvg(card) {
+  if (card === 'L') return '<svg viewBox="0 0 100 140"><rect width="100" height="140" fill="#2c76a6"/><rect x="6" y="6" width="88" height="128" rx="4" fill="none" stroke="#f6eedb" stroke-width="2"/><g transform="translate(0,16)">' + DOVE('#f6eedb') + '</g><text x="50" y="112" text-anchor="middle" font-family="Oswald,Arial Narrow,Impact,sans-serif" font-weight="700" font-size="15" letter-spacing="2" fill="#f6eedb">LIBERAL</text><text x="50" y="127" text-anchor="middle" font-family="Oswald,Arial Narrow,sans-serif" font-size="8" letter-spacing="2" fill="#f6eedb" opacity=".8">ARTICLE</text></svg>';
+  return '<svg viewBox="0 0 100 140"><rect width="100" height="140" fill="#d2562a"/><rect x="6" y="6" width="88" height="128" rx="4" fill="none" stroke="#2a2420" stroke-width="2"/><g transform="translate(0,14)">' + SKULL('#2a2420') + '</g><text x="50" y="112" text-anchor="middle" font-family="Oswald,Arial Narrow,Impact,sans-serif" font-weight="700" font-size="15" letter-spacing="2" fill="#2a2420">FASCIST</text><text x="50" y="127" text-anchor="middle" font-family="Oswald,Arial Narrow,sans-serif" font-size="8" letter-spacing="2" fill="#2a2420" opacity=".8">ARTICLE</text></svg>';
+}
+function tile(card, extra) {
+  return '<div class="tile ' + (extra || '') + '">' + (artImg(card === 'L' ? 'libPolicy' : 'fasPolicy') || tileSvg(card)) + '</div>';
+}
+function cardSvg(kind) {
+  const cfg = {
+    L: ['#2c76a6', '#f6eedb', 'LIBERAL', DOVE('#f6eedb'), 'Protect the Republic'],
+    F: ['#d2562a', '#2a2420', 'FASCIST', SKULL('#2a2420'), 'Install your leader'],
+    H: ['#2a2420', '#d2562a', 'HITLER', HAT('#d2562a'), 'Stay hidden. Seize power.'],
+    PL: ['#2c76a6', '#f6eedb', 'LIBERAL', DOVE('#f6eedb'), 'Party membership'],
+    PF: ['#d2562a', '#2a2420', 'FASCIST', SKULL('#2a2420'), 'Party membership']
+  }[kind];
+  return '<svg viewBox="0 0 100 140"><rect width="100" height="140" fill="' + cfg[0] + '"/><rect x="5" y="5" width="90" height="130" rx="5" fill="none" stroke="' + cfg[1] + '" stroke-width="1.6"/><rect x="9" y="9" width="82" height="122" rx="3" fill="none" stroke="' + cfg[1] + '" stroke-width=".6" stroke-dasharray="2 2"/><g transform="translate(0,6) scale(1)">' + cfg[3] + '</g><text x="50" y="110" text-anchor="middle" font-family="Oswald,Arial Narrow,Impact,sans-serif" font-weight="700" font-size="17" letter-spacing="2.5" fill="' + cfg[1] + '">' + cfg[2] + '</text><text x="50" y="125" text-anchor="middle" font-family="Oswald,Arial Narrow,sans-serif" font-size="7" letter-spacing="1.5" fill="' + cfg[1] + '" opacity=".85">' + cfg[4].toUpperCase() + '</text></svg>';
+}
+const backSvg = '<svg viewBox="0 0 100 140"><rect width="100" height="140" fill="#2a2420"/><rect x="6" y="6" width="88" height="128" rx="5" fill="none" stroke="#c9a227" stroke-width="1.6"/><text x="50" y="62" text-anchor="middle" font-family="Oswald,Impact,sans-serif" font-weight="700" font-size="14" letter-spacing="2" fill="#c9a227">SECRET</text><text x="50" y="84" text-anchor="middle" font-family="Oswald,Impact,sans-serif" font-weight="700" font-size="14" letter-spacing="2" fill="#c9a227">ROLE</text><text x="50" y="110" text-anchor="middle" font-family="Oswald,sans-serif" font-size="7" letter-spacing="1.5" fill="#c9a227" opacity=".8">TAP TO REVEAL</text></svg>';
+const roleCard = (kind, slot) => '<div class="rolecard">' + (artImg(slot) || cardSvg(kind)) + '</div>';
+
+/* ================= UI plumbing ================= */
+function toast(msg, ms) {
+  const t = $('#toast'); t.innerHTML = '<div class="toast">' + esc(msg) + '</div>';
+  clearTimeout(toast.h); toast.h = setTimeout(() => { t.innerHTML = ''; }, ms || 3200);
+}
+const pname = p => (ST.game && ST.game.S && ST.game.S.names[p]) || (ST.players[p] && ST.players[p].name) || 'Someone';
+function myView() {
+  if (ST.isHost && HOST.G) return SH.views(HOST.G)[ST.pid] || null;
+  return ST.priv;
+}
+const gameS = () => ST.game && ST.game.S;
+function setErr(m) { ST.err = m || ''; ST.busy = false; render(); }
+
+/* ================= firebase-ish db layer ================= */
+const gdoc = () => DB.doc('games/' + ST.gid);
+const subscribe = (q, fn) => { unsubs.push(q.onSnapshot(fn, e => { console.warn('db', e); })); };
+function cleanup() { unsubs.forEach(u => { try { u(); } catch (e) {} }); unsubs = []; }
+
+async function enter(mode) {
+  const name = ($('#in-name') || {}).value.trim().slice(0, 14);
+  const pw = ($('#in-pw') || {}).value.trim();
+  if (!name) return setErr('Pick a name first.');
+  if (pw.length < 3) return setErr('The game password needs at least 3 characters.');
+  ST.busy = true; ST.err = ''; render();
+  try { await doEnter(mode, name, pw); }
+  catch (e) {
+    console.error(e);
+    const perm = e && (e.code === 'invalid_argument' || e.code === 'not_granted');
+    setErr(perm ? 'You do not have permission to play. Ask the page owner to share it with you as a Contributor (or invite you by email).' : 'Could not connect: ' + (e && e.message || e));
+  }
+}
+
+async function doEnter(mode, name, pw) {
+  if (!DB) throw new Error('Multiplayer storage is unavailable. Open this page inside claude.ai while signed in.');
+  const pid = ST.pid || await getPid();
+  const gid = await hashPw(pw);
+  ST.pid = pid; ST.gid = gid; ST.name = name; ST.pw = pw;
+  const snap = await gdoc().get();
+  const keys = await loadKeys(gid, pid);
+  ST.keys = keys;
+  if (mode === 'create') {
+    if (snap.exists) return setErr('A game with that password already exists. Choose another password, or use Join.');
+    await gdoc().set({ host: pid, hostPub: keys.pub, phase: 'lobby', S: null, created: Date.now() });
+  } else if (!snap.exists) {
+    return setErr('No game found with that password. Check it, or create a new game.');
+  }
+  const g = (await gdoc().get()).data();
+  const pdoc = DB.doc('games/' + gid + '/players/' + pid);
+  const ex = await pdoc.get();
+  const inGame = g.S && g.S.seats.includes(pid);
+  if (g.phase !== 'lobby' && !inGame) {
+    ST.spectator = true;
+  } else {
+    ST.spectator = false;
+    if (!ex.exists) {
+      const all = await DB.collection('games/' + gid + '/players').get();
+      if (all.size >= 10) return setErr('That game is full (10 players).');
+    }
+    await pdoc.set({ name, pub: keys.pub, t: ex.exists ? ex.data().t : Date.now() });
+  }
+  ST.isHost = g.host === pid;
+  lsSet('sh2:last', JSON.stringify({ name, pw }));
+  ST.first = true; ST.seenVote = null; ST.seenPol = null; ST.sel = null; ST.pick = null; ST.priv = null;
+  cleanup();
+  if (ST.isHost) await initHost(g);
+  startSubs();
+  ST.view = 'room'; ST.busy = false; ST.err = '';
+  render();
+}
+
+async function getPid() {
+  if (USER) { try { const id = await USER.id(); if (id) return id; } catch (e) {} }
+  let id = lsGet('sh2:pid');
+  if (!id) { id = 'p' + Math.random().toString(36).slice(2, 12); lsSet('sh2:pid', id); }
+  return id;
+}
+
+function startSubs() {
+  subscribe(gdoc(), snap => {
+    ST.game = snap.exists ? snap.data() : null;
+    const S = gameS();
+    if (S) {
+      if (ST.first) { ST.seenVote = S.lastVote ? S.lastVote.id : 0; ST.seenPol = S.lastPolicy ? S.lastPolicy.n : 0; ST.first = false; }
+      else {
+        if (S.lastVote && S.lastVote.id !== ST.seenVote && ST.view === 'room') { ST.modal = 'vote'; }
+        if (S.lastPolicy && S.lastPolicy.n !== ST.seenPol) { ST.seenPol = S.lastPolicy.n; toast((S.lastPolicy.card === 'L' ? 'A LIBERAL' : 'A FASCIST') + ' policy was enacted' + (S.lastPolicy.chaos ? ' (chaos)' : '') + '!', 3500); }
+      }
+      if (S.stage !== ST.lastStage) { ST.sel = null; ST.pick = null; ST.lastStage = S.stage; }
+    }
+    if (ST.game && ST.game.phase === 'lobby') { ST.modal = null; ST.priv = ST.isHost ? null : ST.priv; }
+    if (ST.game && ST.game.phase !== 'lobby' && !ST.spectator && !ST.isHost && ST.game.S && !ST.game.S.seats.includes(ST.pid)) ST.spectator = true;
+    render();
+  });
+  subscribe(DB.collection('games/' + ST.gid + '/players'), snap => {
+    const m = {}; snap.docs.forEach(d => { m[d.id] = d.data(); }); ST.players = m;
+    if (ST.isHost && HOST.G) HOST.keyCache = HOST.keyCache; // keys derived lazily
+    render();
+  });
+  if (!ST.spectator) {
+    subscribe(DB.doc('games/' + ST.gid + '/priv/' + ST.pid), async snap => {
+      if (ST.isHost) return;
+      if (!snap.exists || !ST.game) { ST.priv = null; render(); return; }
+      try {
+        const key = await sharedKey(ST.keys.priv, ST.game.hostPub);
+        ST.priv = await unseal(key, snap.data().c);
+      } catch (e) { ST.priv = null; }
+      render();
+    });
+  }
+}
+
+/* ================= host runtime ================= */
+async function initHost(g) {
+  HOST.G = null; HOST.q = []; HOST.lastView = {}; HOST.keyCache = {};
+  if (g.phase === 'play' || g.phase === 'over') {
+    try {
+      const es = await DB.doc('games/' + ST.gid + '/engine/main').get();
+      if (es.exists && g.hostPub === ST.keys.pub) {
+        const key = await sharedKey(ST.keys.priv, ST.keys.pub);
+        const E = await unseal(key, es.data().c);
+        HOST.G = { S: JSON.parse(JSON.stringify(g.S)), E, rnd: Math.random };
+        if (!HOST.G.S.acks) HOST.G.S.acks = {};
+      } else toast('Could not resume: host key not found in this browser.', 6000);
+    } catch (e) { console.warn(e); toast('Could not resume the game state.', 6000); }
+  }
+  subscribe(DB.collection('games/' + ST.gid + '/act'), snap => {
+    snap.docChanges().forEach(ch => {
+      if (ch.type === 'removed') return;
+      const d = ch.doc.data(); HOST.q.push({ pid: ch.doc.id, n: d.n, c: d.c });
+    });
+    pump();
+  });
+  scheduleBots();
+}
+async function keyForPlayer(pid) {
+  const pub = ST.players[pid] && !ST.players[pid].bot && ST.players[pid].pub;
+  if (!pub) return null;
+  const c = HOST.keyCache[pid];
+  if (c && c.pub === pub) return c.key;
+  const key = await sharedKey(ST.keys.priv, pub);
+  HOST.keyCache[pid] = { pub, key };
+  return key;
+}
+async function pump() {
+  if (HOST.busy) return; HOST.busy = true;
+  try {
+    while (HOST.q.length) {
+      const it = HOST.q.shift(), G = HOST.G;
+      if (!G || G.S.phase !== 'play') continue;
+      let a = it.a;
+      if (it.c) {
+        if (it.n <= (G.S.acks[it.pid] || 0)) continue;
+        try { a = await unseal(await keyForPlayer(it.pid), it.c); } catch (e) { continue; }
+        G.S.acks[it.pid] = it.n;
+      }
+      const r = SH.act(G, it.pid, a);
+      if (!r.ok && !it.c) toast(r.err);
+      try { await persist(G); } catch (e) { console.error(e); toast('Could not save game state — check your connection.'); }
+    }
+  } finally { HOST.busy = false; scheduleBots(); }
+}
+async function persist(G) {
+  G.S.rev++;
+  const selfKey = await sharedKey(ST.keys.priv, ST.keys.pub);
+  await DB.doc('games/' + ST.gid + '/engine/main').set({ c: await seal(selfKey, G.E), rev: G.S.rev });
+  const vs = SH.views(G);
+  for (const p of G.S.seats) {
+    if (p === ST.pid || (ST.players[p] && ST.players[p].bot)) continue;
+    const js = JSON.stringify(vs[p]) + (ST.players[p] ? ST.players[p].pub : '');
+    if (HOST.lastView[p] === js) continue;
+    const key = await keyForPlayer(p); if (!key && subtle) continue;
+    await DB.doc('games/' + ST.gid + '/priv/' + p).set({ c: await seal(key, vs[p]) });
+    HOST.lastView[p] = js;
+  }
+  await gdoc().set({ host: ST.pid, hostPub: ST.keys.pub, phase: G.S.phase, S: G.S, created: ST.game ? ST.game.created : Date.now() });
+}
+// reseal private info when a player's key changed (e.g. they reloaded on a new device)
+function watchKeyChanges() {
+  if (!ST.isHost || !HOST.G || HOST.G.S.phase !== 'play') return;
+  const G = HOST.G, vs = SH.views(G);
+  G.S.seats.forEach(async p => {
+    if (p === ST.pid || !ST.players[p] || ST.players[p].bot) return;
+    const js = JSON.stringify(vs[p]) + ST.players[p].pub;
+    if (HOST.lastView[p] !== js) {
+      try { const key = await keyForPlayer(p); await DB.doc('games/' + ST.gid + '/priv/' + p).set({ c: await seal(key, vs[p]) }); HOST.lastView[p] = js; } catch (e) {}
+    }
+  });
+}
+
+async function sendAct(a) {
+  if (ST.spectator) return;
+  if (ST.isHost) { HOST.q.push({ pid: ST.pid, a }); pump(); return; }
+  try {
+    const key = await sharedKey(ST.keys.priv, ST.game.hostPub);
+    lastN = Math.max(lastN + 1, Date.now());
+    await DB.doc('games/' + ST.gid + '/act/' + ST.pid).set({ n: lastN, c: await seal(key, a) });
+  } catch (e) { toast('Could not send your move — ' + (e && e.message || 'try again')); }
+}
+
+async function startGame() {
+  const plist = Object.entries(ST.players).sort((a, b) => a[1].t - b[1].t);
+  if (plist.length < 5 || plist.length > 10) return toast('You need 5–10 players.');
+  const names = {}; plist.forEach(([p, d]) => { names[p] = d.name; });
+  HOST.G = SH.newGame(plist.map(x => x[0]), names);
+  HOST.lastView = {}; ST.priv = null; ST.sel = null; ST.pick = null; ST.first = true; ST.lastStage = null; ST.showRole = false;
+  try { await persist(HOST.G); scheduleBots(); } catch (e) { toast('Could not start: ' + (e && e.message || e)); HOST.G = null; }
+}
+async function playAgain() {
+  const g = ST.game;
+  try {
+    await Promise.all(Object.keys(ST.players).filter(p => p !== ST.pid).map(p => DB.doc('games/' + ST.gid + '/priv/' + p).delete().catch(() => {})));
+    await DB.doc('games/' + ST.gid + '/engine/main').delete().catch(() => {});
+    HOST.G = null; HOST.lastView = {};
+    await gdoc().set({ host: ST.pid, hostPub: ST.keys.pub, phase: 'lobby', S: null, created: g.created });
+    ST.showRole = false;
+  } catch (e) { toast('Could not reset: ' + (e && e.message || e)); }
+}
+async function leaveRoom() {
+  if (ST.game && ST.game.phase === 'lobby' && !ST.spectator) {
+    try { await DB.doc('games/' + ST.gid + '/players/' + ST.pid).delete(); } catch (e) {}
+    if (ST.isHost) Object.entries(ST.players).filter(([, d]) => d.bot).forEach(([id]) => DB.doc('games/' + ST.gid + '/players/' + id).delete().catch(() => {}));
+  }
+  cleanup(); lsDel('sh2:last');
+  Object.assign(ST, { view: 'landing', game: null, players: {}, priv: null, gid: null, modal: null, isHost: false, spectator: false });
+  HOST.G = null; render();
+}
+
+
+/* ================= bots (host only, for testing) ================= */
+const BOT_NAMES = ['Ada', 'Brutus', 'Clara', 'Dmitri', 'Edith', 'Franz', 'Greta', 'Hugo', 'Ilse', 'Jonas'];
+async function addBot() {
+  const bots = Object.entries(ST.players).filter(([, d]) => d.bot);
+  if (Object.keys(ST.players).length >= 10) return toast('The table is full (10).');
+  const used = new Set(Object.values(ST.players).map(d => d.name));
+  const nm = 'Bot ' + (BOT_NAMES.find(n => !used.has('Bot ' + n)) || (bots.length + 1));
+  const id = 'bot_' + Math.random().toString(36).slice(2, 8);
+  try { await DB.doc('games/' + ST.gid + '/players/' + id).set({ name: nm, pub: 'bot', bot: true, t: Date.now() }); }
+  catch (e) { toast('Could not add bot: ' + (e && e.message || e)); }
+}
+async function removeBot() {
+  const bots = Object.entries(ST.players).filter(([, d]) => d.bot).sort((a, b) => b[1].t - a[1].t);
+  if (!bots.length) return;
+  try { await DB.doc('games/' + ST.gid + '/players/' + bots[0][0]).delete(); } catch (e) {}
+}
+function botAction(G) {
+  const S = G.S, E = G.E;
+  if (S.phase !== 'play') return null;
+  const isBot = p => !!(ST.players[p] && ST.players[p].bot);
+  const alive = SH.alive(S), role = p => E.roles[p], pickOne = a => a[Math.floor(Math.random() * a.length)];
+  const fas = p => role(p) === 'F' || role(p) === 'H';
+  switch (S.stage) {
+    case 'nominate':
+      if (isBot(S.pres)) return { pid: S.pres, a: { t: 'nominate', target: pickOne(alive.filter(p => !S.inel.includes(p))) } };
+      break;
+    case 'vote': {
+      const b = alive.find(p => isBot(p) && !S.voted.includes(p));
+      if (b) { const ja = fas(b) ? (fas(S.nominee) || Math.random() < .6) : Math.random() < .7; return { pid: b, a: { t: 'vote', v: ja ? 'ja' : 'nein' } }; }
+      break;
+    }
+    case 'pres_discard':
+      if (isBot(S.pres)) { let i = E.hand.indexOf(fas(S.pres) ? 'L' : 'F'); if (i < 0) i = 0; return { pid: S.pres, a: { t: 'discard', i } }; }
+      break;
+    case 'chan_discard':
+      if (isBot(S.chan)) {
+        if (S.vetoOpen && !S.vetoDenied && !fas(S.chan) && E.hand.every(c => c === 'F')) return { pid: S.chan, a: { t: 'veto' } };
+        let keep = E.hand.indexOf(fas(S.chan) ? 'F' : 'L'); if (keep < 0) keep = 0;
+        return { pid: S.chan, a: { t: 'discard', i: 1 - keep } };
+      }
+      break;
+    case 'veto':
+      if (isBot(S.pres)) return { pid: S.pres, a: { t: 'vetoResp', ok: !fas(S.pres) } };
+      break;
+    case 'ack':
+      if (isBot(S.pres)) return { pid: S.pres, a: { t: 'ack' } };
+      break;
+    case 'investigate':
+      if (isBot(S.pres)) return { pid: S.pres, a: { t: 'investigate', target: pickOne(alive.filter(p => p !== S.pres && !S.inv.includes(p))) } };
+      break;
+    case 'special':
+      if (isBot(S.pres)) return { pid: S.pres, a: { t: 'special', target: pickOne(alive.filter(p => p !== S.pres)) } };
+      break;
+    case 'execute':
+      if (isBot(S.pres)) {
+        let c = alive.filter(p => p !== S.pres);
+        if (fas(S.pres)) { const nf = c.filter(p => !fas(p)); if (nf.length) c = nf; }
+        return { pid: S.pres, a: { t: 'execute', target: pickOne(c) } };
+      }
+      break;
+  }
+  return null;
+}
+function scheduleBots() {
+  if (!ST.isHost || !HOST.G || HOST.botTimer || HOST.G.S.phase !== 'play') return;
+  HOST.botTimer = setTimeout(() => {
+    HOST.botTimer = null;
+    const G = HOST.G; if (!G) return;
+    const b = botAction(G);
+    if (b) { HOST.q.push(b); pump(); }
+    else if (G.S.phase === 'play') scheduleBots();
+  }, 1000);
+}
+
+/* ================= art uploads (page editors only) ================= */
+async function uploadArt(slot, file) {
+  if (!ASSETS || !file) return;
+  try {
+    toast('Uploading…');
+    const r = await ASSETS.upload(file);
+    const art = Object.assign({}, ST.art); art[slot] = r.id;
+    await DB.doc('config/art').set(art);
+    toast('Artwork updated.');
+  } catch (e) { toast('Upload failed: ' + (e && e.message || e)); }
+}
+async function resetArt(slot) {
+  const art = Object.assign({}, ST.art); delete art[slot];
+  try { await DB.doc('config/art').set(art); } catch (e) { toast('Could not reset.'); }
+}
+
+/* ================= rendering ================= */
+function render() {
+  const app = $('#app');
+  if (ST.view === 'landing') { renderLanding(app); }
+  else renderRoom(app);
+  renderOverlay();
+  watchKeyChanges();
+}
+let landingBuilt = false;
+function renderLanding(app) {
+  const saved = (() => { try { return JSON.parse(lsGet('sh2:last') || 'null'); } catch (e) { return null; } })();
+  if (!landingBuilt || !$('#in-name')) {
+    app.innerHTML = logoHtml() +
+      '<div class="card"><label for="in-name">Your name</label><input id="in-name" type="text" maxlength="14" autocomplete="nickname" placeholder="e.g. Hindenburg" value="' + esc(ST.name || (saved && saved.name) || '') + '">' +
+      '<label for="in-pw">Game password</label><input id="in-pw" type="password" autocomplete="off" placeholder="Everyone in the same game uses the same password" value="' + esc(ST.pw || '') + '">' +
+      '<div id="land-err"></div>' +
+      '<div class="row"><button class="pri grow" data-a="join" id="b-join">Join game</button><button class="grow" data-a="create" id="b-create">Create game</button></div>' +
+      '<p class="muted small">Create a game with a password, then share the password with 4–9 friends. 5–10 players needed.</p></div>' +
+      '<div class="card small"><b>How it works.</b> One player creates the game and hosts it (keep their tab open). Secret roles and policy cards are encrypted so only their owner can read them. ' +
+      'Friends need access to this page (share it as <i>Contributor</i> or invite them by email) and must be signed in.</div>' +
+      '<div class="row" style="justify-content:center"><button class="ghost" data-a="rules">Rules</button>' + '<button class="ghost" data-a="art" id="b-art" style="display:none">Artwork</button></div>' + footHtml();
+    landingBuilt = true;
+  }
+  const e = $('#land-err'); if (e) e.innerHTML = (!DB ? '<div class="err">Multiplayer storage isn’t available here. Open this page in claude.ai while signed in.</div>' : '') + (ST.err ? '<div class="err">' + esc(ST.err) + '</div>' : '');
+  ['b-join', 'b-create'].forEach(id => { const b = $('#' + id); if (b) b.disabled = ST.busy || !DB; });
+  const ab = $('#b-art'); if (ab) ab.style.display = ST.canArt ? '' : 'none';
+}
+const logoHtml = () => '<div class="logo"><div class="sub">A social deduction game for 5–10 players</div><h1>Secret <span>Hitler</span></h1></div>';
+const footHtml = () => '<div class="foot">Secret Hitler © Goat, Wolf &amp; Cabbage LLC — designed by Max Temkin, Mike Boxleiter &amp; Tommy Maranges; artwork by Mackenzie Schubert.<br>Licensed <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a> · fan-made online adaptation, non-commercial.<br>Built-in illustrations are original stand-ins unless the original art is uploaded.</div>';
+
+function playerChip(p, opts) {
+  const S = gameS(), v = myView(), o = opts || {};
+  const tags = [];
+  if (p === ST.pid) tags.push('<span class="tag me">you</span>');
+  if (ST.players[p] && ST.players[p].bot) tags.push('<span class="tag">bot</span>');
+  if (S) {
+    if (S.pres === p && S.phase === 'play') tags.push('<span class="tag p">President</span>');
+    const chan = S.chan || (S.stage === 'vote' ? S.nominee : null);
+    if (chan === p && S.phase === 'play') tags.push('<span class="tag c">' + (S.chan ? 'Chancellor' : 'Nominee') + '</span>');
+    if (S.notH.includes(p)) tags.push('<span class="tag ok">Not Hitler</span>');
+    if (S.inv.includes(p)) tags.push('<span class="tag">Investigated</span>');
+    if (S.dead.includes(p)) tags.push('<span class="tag">Dead</span>');
+    if (S.stage === 'vote' && S.voted.includes(p)) tags.push('<span class="tag ok">Voted</span>');
+    if (S.roles) { const r = S.roles[p]; tags.push('<span class="tag ' + (r === 'L' ? 'c' : r === 'H' ? 'h' : 'f') + '">' + (r === 'L' ? 'Liberal' : r === 'H' ? 'Hitler' : 'Fascist') + '</span>'); }
+    else if (v && v.mates) { const m = v.mates.find(x => x.p === p); if (m) tags.push('<span class="tag ' + (m.r === 'H' ? 'h' : 'f') + '">' + (m.r === 'H' ? 'Hitler' : 'Fascist') + '</span>'); }
+  }
+  const cls = ['pl'];
+  if (S && S.dead.includes(p)) cls.push('dead');
+  if (o.pick) cls.push('pick');
+  if (o.off) cls.push('off');
+  if (ST.pick === p) cls.push('sel');
+  const attr = o.pick ? ' data-a="pick" data-p="' + esc(p) + '"' : ' disabled';
+  return '<button class="' + cls.join(' ') + '"' + attr + '><span class="nm">' + esc(pname(p)) + '</span><span class="tags">' + tags.join('') + '</span></button>';
+}
+
+function renderRoom(app) {
+  landingBuilt = false;
+  const g = ST.game;
+  if (!g) { app.innerHTML = logoHtml() + '<div class="card center">Connecting…</div>'; return; }
+  if (g.phase === 'lobby') return renderLobby(app);
+  renderGame(app);
+}
+
+function renderLobby(app) {
+  const plist = Object.entries(ST.players).sort((a, b) => a[1].t - b[1].t);
+  const n = plist.length;
+  let h = logoHtml() + '<div class="card"><h2>Lobby</h2><div class="row small muted" style="margin:4px 0 8px"><span>Password: <b id="pwshow">' + (ST.showPw ? esc(ST.pw) : '••••••') + '</b></span><button class="ghost" style="padding:2px 8px;font-size:12px" data-a="togglepw">' + (ST.showPw ? 'Hide' : 'Show') + '</button></div><div class="players">';
+  plist.forEach(([p, d]) => {
+    h += '<div class="pl"><span class="nm">' + esc(d.name) + '</span><span class="tags">' + (p === ST.pid ? '<span class="tag me">you</span>' : '') + (ST.game.host === p ? '<span class="tag p">host</span>' : '') + (d.bot ? '<span class="tag">bot</span>' : '') + '</span></div>';
+  });
+  h += '</div><p class="muted small">' + n + ' / 10 players · need at least 5.</p>';
+  if (ST.spectator) h += '<div class="banner">This game already started — you’re watching.</div>';
+  if (ST.isHost) h += '<div class="row" style="margin-bottom:8px"><button class="grow" data-a="addbot" ' + (n >= 10 ? 'disabled' : '') + '>+ Add bot</button><button class="grow ghost" data-a="rmbot" ' + (plist.some(x => x[1].bot) ? '' : 'disabled') + '>– Remove bot</button></div>';
+  if (ST.isHost) h += '<button class="pri" data-a="start" ' + (n < 5 ? 'disabled' : '') + ' style="width:100%">Start game</button>';
+  else h += '<div class="banner">Waiting for the host to start…</div>';
+  h += '</div>' + splitCard(n) + '<div class="row" style="justify-content:center"><button class="ghost" data-a="leave">Leave</button><button class="ghost" data-a="rules">Rules</button>' + (ST.canArt ? '<button class="ghost" data-a="art">Artwork</button>' : '') + '</div>' + footHtml();
+  app.innerHTML = h;
+}
+function splitCard(n) {
+  if (n < 5) return '';
+  const [l, f] = SH.SPLIT[Math.min(n, 10)];
+  return '<div class="card small">With ' + Math.min(n, 10) + ' players: <b>' + l + ' Liberals</b>, <b>' + f + ' Fascist' + (f > 1 ? 's' : '') + '</b> and <b>Hitler</b>. ' + (n <= 6 ? 'Hitler knows the Fascist.' : 'Hitler does <u>not</u> know the Fascists.') + '</div>';
+}
+
+function boardsHtml(S) {
+  const n = S.seats.length, track = SH.powerTrack(n);
+  let l = '<div class="track l5">';
+  for (let i = 1; i <= 5; i++) l += '<div class="slot' + (i <= S.libs ? ' on' : '') + '"><span class="n">' + i + '</span>' + (i <= S.libs ? (artImg('libPolicy') || tileSvg('L')) : (i === 5 ? '<span style="color:var(--lib)"><svg viewBox="0 0 100 100">' + DOVE('currentColor') + '</svg></span>' : '')) + '</div>';
+  l += '</div>';
+  let f = '<div class="track f6">';
+  for (let i = 1; i <= 6; i++) {
+    const pw = i === 6 ? 'win' : track[i - 1];
+    f += '<div class="slot' + (i <= S.fasc ? ' on' : '') + '"><span class="n">' + i + '</span>' + (i <= S.fasc ? (artImg('fasPolicy') || tileSvg('F')) : (pw ? '<span style="color:var(--fas)">' + ICONS[pw] + '</span>' : '')) + '</div>';
+  }
+  f += '</div>';
+  const pwNames = { investigate: 'Investigate', peek: 'Policy peek', special: 'Special election', execute: 'Execution', win: 'Fascists win' };
+  const nextPw = S.fasc < 6 ? (S.fasc + 1 === 6 ? 'win' : track[S.fasc]) : null;
+  const dots = [1, 2, 3].map(i => '<span class="dot' + (i <= S.tracker ? ' on' : '') + '"></span>').join('');
+  return '<div class="card boardL"><div class="row"><h2 style="color:var(--lib)">Liberal</h2><span class="grow"></span><span class="muted small">' + S.libs + ' / 5</span></div>' + l +
+    '</div><div class="card boardF"><div class="row"><h2 style="color:var(--fas)">Fascist</h2><span class="grow"></span><span class="muted small">' + S.fasc + ' / 6</span></div>' + f +
+    '<div class="cap">' + (S.fasc >= 3 ? 'Hitler as Chancellor wins for the Fascists! ' : '') + (S.fasc >= 5 ? 'Veto power active. ' : '') + (nextPw && nextPw !== 'win' ? 'Next power: ' + pwNames[nextPw] : '') + '</div></div>' +
+    '<div class="card"><div class="row"><div class="dots" aria-label="Election tracker">' + dots + '</div><span class="grow muted small">Election tracker — 3 failures enact the top policy</span></div>' +
+    '<div class="row small muted" style="margin-top:6px"><span>Draw pile: <b>' + S.drawN + '</b></span><span>Discard: <b>' + S.discN + '</b></span></div></div>';
+}
+
+function actionPanel(S) {
+  const me = ST.pid, v = myView(), isP = me === S.pres, isC = me === S.chan;
+  const dead = S.dead.includes(me);
+  const alive = SH.alive(S);
+  const nameP = pname(S.pres), nameC = S.chan ? pname(S.chan) : (S.nominee ? pname(S.nominee) : '—');
+  if (S.phase === 'over') return '';
+  if (ST.spectator) return '<div class="banner">You are watching this game.</div>';
+  if (dead) return '<div class="banner">☠ You were executed. Watch quietly — dead players do not speak or vote.</div>';
+  const wait = t => '<div class="banner">' + t + '</div>';
+  const picker = (title, can, btn, act, helpOff) => {
+    const pickable = alive.filter(can);
+    let h = '<h2>' + title + '</h2><div class="players" style="margin:8px 0">' + S.seats.map(p => playerChip(p, { pick: pickable.includes(p), off: !pickable.includes(p) && !S.dead.includes(p) })).join('') + '</div>';
+    if (helpOff) h += '<p class="muted small">' + helpOff + '</p>';
+    h += '<button class="pri" style="width:100%" data-a="' + act + '" ' + (ST.pick ? '' : 'disabled') + '>' + btn + (ST.pick ? ' ' + esc(pname(ST.pick)) : '') + '</button>';
+    return h;
+  };
+  switch (S.stage) {
+    case 'nominate':
+      if (isP) return '<div class="card">' + picker('Nominate a Chancellor', p => !S.inel.includes(p), 'Nominate', 'nominate', 'Greyed-out players are term-limited or you.') + '</div>';
+      return wait('<b>' + esc(nameP) + '</b> is choosing a Chancellor…');
+    case 'vote': {
+      const voted = S.voted.includes(me);
+      let h = '<div class="card"><h2>Vote on the government</h2><p style="margin:6px 0"><b>' + esc(nameP) + '</b> (President) & <b>' + esc(nameC) + '</b> (Chancellor)</p>';
+      if (!voted) {
+        h += '<div class="votecards"><button class="ja" data-a="vote" data-v="ja">' + (artImg('ja') || 'Ja!') + '</button><button class="nein" data-a="vote" data-v="nein">' + (artImg('nein') || 'Nein!') + '</button></div>';
+      } else h += '<div class="banner">✓ Your vote is in. Waiting for ' + (alive.length - S.voted.length) + ' more…</div>';
+      return h + '</div>';
+    }
+    case 'pres_discard':
+      if (isP) {
+        if (!v || !v.hand) return wait('Drawing policies…');
+        return '<div class="card"><h2>Discard one policy</h2><p class="muted small" style="margin:4px 0">Tap the policy you want to <b>discard</b>. The other two go to your Chancellor.</p><div class="hand">' + v.hand.map((c, i) => '<div data-a="sel" data-i="' + i + '">' + tile(c, ST.sel === i ? 'sel' : '') + '</div>').join('') + '</div><button class="pri" style="width:100%" data-a="discard" ' + (ST.sel == null ? 'disabled' : '') + '>Discard selected</button></div>';
+      }
+      return wait('<b>' + esc(nameP) + '</b> is reviewing three policies in secret…');
+    case 'chan_discard':
+      if (isC) {
+        if (!v || !v.hand) return wait('Receiving policies…');
+        return '<div class="card"><h2>Enact a policy</h2><p class="muted small" style="margin:4px 0">Tap the policy you want to <b>enact</b>. The other is discarded.</p><div class="hand">' + v.hand.map((c, i) => '<div data-a="sel" data-i="' + i + '">' + tile(c, ST.sel === i ? 'sel' : '') + '</div>').join('') + '</div><div class="row"><button class="pri grow" data-a="enact" ' + (ST.sel == null ? 'disabled' : '') + '>Enact selected</button>' + (S.vetoOpen && !S.vetoDenied ? '<button class="grow" data-a="veto">Propose veto</button>' : '') + '</div></div>';
+      }
+      return wait('<b>' + esc(nameC) + '</b> is choosing which policy to enact…');
+    case 'veto':
+      if (isP) return '<div class="card"><h2>Veto proposed</h2><p style="margin:6px 0"><b>' + esc(nameC) + '</b> wants to veto this agenda. Accepting discards both policies and advances the election tracker.</p><div class="row"><button class="pri grow" data-a="vetoyes">Accept veto</button><button class="grow" data-a="vetono">Refuse</button></div></div>';
+      return wait('<b>' + esc(nameC) + '</b> proposed a veto. <b>' + esc(nameP) + '</b> must decide…');
+    case 'ack':
+      if (isP && v) {
+        if (v.peek) return '<div class="card"><h2>Policy peek</h2><p class="muted small">The next three policies, top first (they stay in this order):</p><div class="hand">' + v.peek.map(c => '<div style="width:min(30%,110px)">' + tile(c) + '</div>').join('') + '</div><button class="pri" style="width:100%" data-a="ack">Done</button></div>';
+        if (v.inv) return '<div class="card"><h2>Investigation</h2><p style="margin:6px 0"><b>' + esc(pname(v.inv.pid)) + '</b> is a member of the <b>' + (v.inv.party === 'L' ? 'Liberal' : 'Fascist') + ' Party</b>.</p><div class="rolecard" style="width:min(44vw,160px)">' + (artImg(v.inv.party === 'L' ? 'libParty' : 'fasParty') || cardSvg(v.inv.party === 'L' ? 'PL' : 'PF')) + '</div><p class="muted small">You may share this — or lie about it.</p><button class="pri" style="width:100%" data-a="ack">Done</button></div>';
+        return wait('One moment…');
+      }
+      return wait('<b>' + esc(nameP) + '</b> is using a presidential power in secret…');
+    case 'investigate':
+      if (isP) return '<div class="card">' + picker('Investigate a player', p => p !== me && !S.inv.includes(p), 'Investigate', 'investigate', 'You will see their party membership (Hitler counts as Fascist).') + '</div>';
+      return wait('<b>' + esc(nameP) + '</b> is choosing a player to investigate…');
+    case 'special':
+      if (isP) return '<div class="card">' + picker('Call a special election', p => p !== me, 'Make President:', 'special', 'The chosen player becomes the next President.') + '</div>';
+      return wait('<b>' + esc(nameP) + '</b> is calling a special election…');
+    case 'execute':
+      if (isP) return '<div class="card">' + picker('Execute a player', p => p !== me, 'Execute', 'execute', 'If you execute Hitler, the Liberals win.') + '</div>';
+      return wait('<b>' + esc(nameP) + '</b> must execute a player…');
+  }
+  return '';
+}
+
+function rolePanel(S) {
+  const v = myView();
+  if (ST.spectator || !v || !v.role) return '';
+  const kind = v.role, slot = kind === 'L' ? 'libRole' : kind === 'F' ? 'fasRole' : 'hitRole';
+  let h = '<div class="card"><div class="row"><h2>Your secret role</h2><span class="grow"></span><button class="ghost" data-a="role">' + (ST.showRole ? 'Hide' : 'Reveal') + '</button></div>';
+  if (ST.showRole) {
+    h += roleCard(kind, slot);
+    if (v.mates.length) h += '<p class="small center">' + (kind === 'H' ? 'Your Fascist ally: ' : 'Your allies: ') + v.mates.map(m => '<b>' + esc(pname(m.p)) + '</b>' + (m.r === 'H' ? ' (Hitler)' : '')).join(', ') + '</p>';
+    else if (kind === 'H') h += '<p class="small center muted">You don’t know who the Fascists are. Stay hidden!</p>';
+    else if (kind === 'L') h += '<p class="small center muted">Find Hitler and pass five Liberal policies.</p>';
+  } else h += '<div class="rolecard" data-a="role" style="cursor:pointer;width:min(40vw,150px)">' + backSvg + '</div>';
+  return h + '</div>';
+}
+
+function renderGame(app) {
+  const S = gameS();
+  if (!S) { app.innerHTML = logoHtml() + '<div class="card center">Loading game…</div>'; return; }
+  let h = '<div class="row" style="margin:8px 0"><h2 class="grow">Secret <span style="color:var(--fas)">Hitler</span></h2><button class="ghost" data-a="rules" style="padding:6px 10px">Rules</button><button class="ghost" data-a="leave" style="padding:6px 10px">Exit</button></div>';
+  if (S.phase === 'over') {
+    h += '<div class="win ' + S.winner + ' disp">' + (S.winner === 'liberal' ? 'Liberals win!' : 'Fascists win!') + '<div style="font:15px Georgia,serif;text-transform:none;letter-spacing:0;margin-top:4px">' + esc(S.why) + '</div></div>';
+    h += '<div class="card"><h2>Secret roles</h2><div class="players" style="margin-top:8px">' + S.seats.map(p => playerChip(p)).join('') + '</div>' + (ST.isHost ? '<button class="pri" style="width:100%;margin-top:12px" data-a="again">Play again (back to lobby)</button>' : '<div class="banner" style="margin-top:10px">Waiting for the host to start another game…</div>') + '</div>';
+  } else {
+    h += '<div class="banner"><b>' + esc(pname(S.pres)) + '</b> is President' + (S.chan ? ' · <b>' + esc(pname(S.chan)) + '</b> is Chancellor' : '') + (S.special ? ' <span class="muted small">(special election)</span>' : '') + '</div>';
+    h += actionPanel(S);
+  }
+  if (S.phase !== 'over') h += '<div class="card"><h2>Players</h2><div class="players" style="margin-top:8px">' + S.seats.map(p => playerChip(p)).join('') + '</div></div>';
+  h += rolePanel(S) + boardsHtml(S);
+  if (S.lastVote) h += '<div class="card"><div class="row"><h3 class="grow">Last election</h3><button class="ghost" data-a="showvote" style="padding:4px 10px;font-size:13px">Show votes</button></div><div class="small">' + esc(pname(S.lastVote.pres)) + ' & ' + esc(pname(S.lastVote.chan)) + ' — <b>' + S.lastVote.ja + ' Ja</b> / <b>' + S.lastVote.nein + ' Nein</b> — ' + (S.lastVote.passed ? 'elected' : 'rejected') + '</div></div>';
+  h += '<div class="card"><h3>Game log</h3><div class="log">' + S.log.map(l => '<div>' + esc(l) + '</div>').join('') + '</div></div>' + footHtml();
+  app.innerHTML = h;
+}
+
+function renderOverlay() {
+  const o = $('#overlay');
+  const S = gameS();
+  if (ST.modal === 'vote' && S && S.lastVote) {
+    const lv = S.lastVote;
+    o.innerHTML = '<div class="modal"><div class="card"><h2 class="center">' + (lv.passed ? 'Government elected' : 'Government rejected') + '</h2><p class="center" style="margin:6px 0">' + esc(pname(lv.pres)) + ' (President) & ' + esc(pname(lv.chan)) + ' (Chancellor)</p><div class="win ' + (lv.passed ? 'liberal' : 'fascist') + ' disp" style="font-size:22px">Ja ' + lv.ja + ' — Nein ' + lv.nein + '</div><div class="vgrid">' +
+      S.seats.filter(p => lv.votes[p]).map(p => '<div class="vv ' + lv.votes[p] + '"><span>' + esc(pname(p)) + '</span><b>' + (lv.votes[p] === 'ja' ? 'Ja!' : 'Nein!') + '</b></div>').join('') + '</div><button class="pri" style="width:100%" data-a="closemodal">OK</button></div></div>';
+  } else if (ST.modal === 'rules') {
+    o.innerHTML = '<div class="modal"><div class="card"><h2>Rules in brief</h2><div class="small" style="margin:8px 0;line-height:1.5">' +
+      '<p><b>Teams.</b> Liberals (majority) vs. Fascists + secret Hitler. Fascists know each other; Hitler knows them only in 5–6 player games.</p>' +
+      '<p><b>Each round.</b> The President nominates a Chancellor (not last elected government’s Chancellor — and not last President if more than 5 players are alive). Everyone votes Ja/Nein; a majority of Ja elects them. Three failed elections in a row enact the top policy.</p>' +
+      '<p><b>Legislative session.</b> President draws 3 policies, discards 1, passes 2. Chancellor enacts 1 and discards the other. No talking while it happens — and lying afterwards is allowed.</p>' +
+      '<p><b>Powers.</b> Enacting Fascist policies unlocks powers: Investigate loyalty, Policy peek, Special election, Execution. After 5 Fascist policies the Chancellor may propose a veto.</p>' +
+      '<p><b>Liberals win</b> with 5 Liberal policies or by executing Hitler. <b>Fascists win</b> with 6 Fascist policies, or by electing Hitler Chancellor after 3 Fascist policies are in play.</p></div><button class="pri" style="width:100%" data-a="closemodal">Got it</button></div></div>';
+  } else if (ST.modal === 'art') {
+    o.innerHTML = '<div class="modal"><div class="card"><h2>Artwork</h2><p class="small muted" style="margin:6px 0">Upload the original card images (from the free print-and-play files at secrethitler.com, CC BY-NC-SA 4.0) and everyone will see them instead of the built-in illustrations. Portrait images ~5:7 work best.</p>' +
+      SLOTS.map(([k, n]) => '<div class="slotrow">' + (ST.art[k] ? '<img alt="" src="/_blob/' + esc(ST.art[k]) + '">' : '<span style="width:34px"></span>') + '<span class="nm">' + esc(n) + '</span><label class="btn small">Upload<input type="file" accept="image/*" data-slot="' + k + '"></label>' + (ST.art[k] ? '<button class="ghost" style="padding:3px 8px;font-size:12px" data-a="resetart" data-slot="' + k + '">Reset</button>' : '') + '</div>').join('') +
+      '<button class="pri" style="width:100%;margin-top:12px" data-a="closemodal">Close</button></div></div>';
+  } else o.innerHTML = '';
+}
+
+/* ================= events ================= */
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-a]'); if (!el || el.disabled) return;
+  const a = el.dataset.a, S = gameS();
+  switch (a) {
+    case 'create': enter('create'); break;
+    case 'join': enter('join'); break;
+    case 'start': startGame(); break;
+    case 'addbot': addBot(); break;
+    case 'rmbot': removeBot(); break;
+    case 'again': playAgain(); break;
+    case 'leave': leaveRoom(); break;
+    case 'rules': ST.modal = 'rules'; render(); break;
+    case 'art': ST.modal = 'art'; render(); break;
+    case 'closemodal': if (ST.modal === 'vote' && S && S.lastVote) ST.seenVote = S.lastVote.id; ST.modal = null; render(); break;
+    case 'showvote': if (S && S.lastVote) { ST.modal = 'vote'; render(); } break;
+    case 'togglepw': ST.showPw = !ST.showPw; render(); break;
+    case 'role': ST.showRole = !ST.showRole; render(); break;
+    case 'pick': ST.pick = ST.pick === el.dataset.p ? null : el.dataset.p; render(); break;
+    case 'sel': ST.sel = +el.dataset.i; render(); break;
+    case 'nominate': case 'investigate': case 'special': case 'execute':
+      if (ST.pick) { const t = ST.pick; ST.pick = null; sendAct({ t: a, target: t }); render(); } break;
+    case 'vote': sendAct({ t: 'vote', v: el.dataset.v }); toast('Vote sent'); break;
+    case 'discard': case 'enact':
+      if (ST.sel != null) { const i = ST.sel; ST.sel = null; sendAct({ t: 'discard', i }); render(); } break;
+    case 'veto': sendAct({ t: 'veto' }); break;
+    case 'vetoyes': sendAct({ t: 'vetoResp', ok: true }); break;
+    case 'vetono': sendAct({ t: 'vetoResp', ok: false }); break;
+    case 'ack': sendAct({ t: 'ack' }); break;
+    case 'resetart': resetArt(el.dataset.slot); break;
+  }
+  if (ST.modal === 'vote' && S && S.lastVote && a !== 'showvote') { /* keep */ }
+});
+document.addEventListener('change', e => {
+  const t = e.target;
+  if (t && t.type === 'file' && t.dataset.slot) uploadArt(t.dataset.slot, t.files[0]);
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && ST.view === 'landing' && (e.target.id === 'in-name' || e.target.id === 'in-pw')) enter('join');
+});
+
+/* ================= boot ================= */
+async function boot() {
+  render();
+  if (!window.claude || !window.claude.use) { render(); return; }
+  try { DB = await claude.use('db'); } catch (e) { DB = null; }
+  try { USER = await claude.use('user'); } catch (e) { USER = null; }
+  try { ASSETS = await claude.use('assets'); ST.canArt = !!ASSETS; } catch (e) { ASSETS = null; }
+  render();
+  if (!DB) return;
+  try { DB.doc('config/art').onSnapshot(s => { ST.art = s.exists ? s.data() : {}; render(); }, () => {}); } catch (e) {}
+  // auto-rejoin after a reload
+  try {
+    const saved = JSON.parse(lsGet('sh2:last') || 'null');
+    if (saved && saved.name && saved.pw) {
+      ST.busy = true; render();
+      try { await doEnter('join', saved.name, saved.pw); }
+      catch (e) { ST.busy = false; ST.err = ''; render(); }
+      if (ST.view === 'landing') { ST.busy = false; ST.err = ''; render(); }
+    }
+  } catch (e) {}
+}
+boot();
+})();
+</script>
+</body>
+</html>
