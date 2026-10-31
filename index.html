@@ -125,8 +125,6 @@ window.SH_CONFIG = {
     projectId: "secret-hitler-c12e9",
     appId: "1:315604980289:web:cb32c1fd202b5d16c4ecc0"
   },
-
-};
   // Optional original artwork: put image files in an "art" folder next to index.html and list them here, e.g.
   // art: { libPolicy: "art/liberal-policy.png", fasPolicy: "art/fascist-policy.png", libRole: "art/liberal-role.png" }
   // Slots: libPolicy fasPolicy libRole fasRole hitRole libParty fasParty ja nein
@@ -879,7 +877,7 @@ function renderLanding(app) {
       '<div class="row" style="justify-content:center"><button class="ghost" data-a="rules">Rules</button>' + '<button class="ghost" data-a="art" id="b-art" style="display:none">Artwork</button></div>' + footHtml();
     landingBuilt = true;
   }
-  const e = $('#land-err'); if (e) e.innerHTML = (!DB ? '<div class="err">Online play isn’t set up: Firebase is not configured (or failed to load). See README.md.</div>' : '') + (ST.err ? '<div class="err">' + esc(ST.err) + '</div>' : '');
+  const e = $('#land-err'); if (e) e.innerHTML = (!DB ? '<div class="err">Online play isn’t set up: Firebase is not configured (or failed to load). See README.md.' + (window.__fbError ? '<br><small>Details: ' + esc(window.__fbError) + '</small>' : '') + '</div>' : '') + (ST.err ? '<div class="err">' + esc(ST.err) + '</div>' : '');
   ['b-join', 'b-create'].forEach(id => { const b = $('#' + id); if (b) b.disabled = ST.busy || !DB; });
   const ab = $('#b-art'); if (ab) ab.style.display = ST.canArt ? '' : 'none';
 }
