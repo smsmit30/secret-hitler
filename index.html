@@ -4,6 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Secret Hitler — Online</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Secret Hitler">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#2a2420">
+<script>window.__fbReady = new Promise(function (r) { window.__fbResolve = r; });</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&display=swap" rel="stylesheet">
 <style>
@@ -110,6 +116,50 @@ button:disabled{opacity:.45;cursor:not-allowed}
 <div id="overlay"></div>
 <div id="toast"></div>
 
+<script>
+/* ============ CONFIG — paste your Firebase web-app config here (see README.md) ============ */
+window.SH_CONFIG = {
+  firebase: {
+    apiKey: "AIzaSyDfXQZGfipzAhhUBP65p7U0GVgrPGzHagU",
+    authDomain: "secret-hitler-c12e9.firebaseapp.com",
+    projectId: "secret-hitler-c12e9",
+    appId: "1:315604980289:web:cb32c1fd202b5d16c4ecc0"
+  },
+
+};
+  // Optional original artwork: put image files in an "art" folder next to index.html and list them here, e.g.
+  // art: { libPolicy: "art/liberal-policy.png", fasPolicy: "art/fascist-policy.png", libRole: "art/liberal-role.png" }
+  // Slots: libPolicy fasPolicy libRole fasRole hitRole libParty fasParty ja nein
+  art: {}
+};
+</script>
+<script type="module">
+const CFG = window.SH_CONFIG && window.SH_CONFIG.firebase;
+const configured = CFG && CFG.apiKey && CFG.projectId && !/YOUR_/.test(CFG.apiKey + CFG.projectId);
+try {
+  if (configured) {
+    const V = '10.14.1', base = 'https://www.gstatic.com/firebasejs/' + V + '/';
+    const [A, F, Au] = await Promise.all([import(base + 'firebase-app.js'), import(base + 'firebase-firestore.js'), import(base + 'firebase-auth.js')]);
+    const app = A.initializeApp(CFG), fs = F.getFirestore(app), auth = Au.getAuth(app);
+    await Au.signInAnonymously(auth);
+    const wrap = s => ({ id: s.id, exists: s.exists(), data: () => s.data() });
+    const clean = d => JSON.parse(JSON.stringify(d));
+    const DB = {
+      doc: p => { const r = F.doc(fs, p); return {
+        get: async () => wrap(await F.getDoc(r)),
+        set: async d => F.setDoc(r, clean(d)),
+        update: async d => F.updateDoc(r, clean(d)),
+        delete: async () => F.deleteDoc(r),
+        onSnapshot: (fn, err) => F.onSnapshot(r, s => fn(wrap(s)), err) }; },
+      collection: p => { const r = F.collection(fs, p);
+        const w = s => ({ docs: s.docs.map(wrap), size: s.size, docChanges: () => s.docChanges().map(c => ({ type: c.type, doc: wrap(c.doc) })) });
+        return { get: async () => w(await F.getDocs(r)), onSnapshot: (fn, err) => F.onSnapshot(r, s => fn(w(s)), err) }; }
+    };
+    window.claude = { use: async n => n === 'db' ? DB : n === 'user' ? { id: async () => auth.currentUser.uid } : null };
+  }
+} catch (e) { console.error('Firebase init failed', e); window.__fbError = String((e && e.message) || e); }
+window.__fbResolve();
+</script>
 <script>
 /* ===== Secret Hitler rules engine (host-authoritative, pure JS) ===== */
 const SH = (() => {
@@ -456,7 +506,7 @@ const SLOTS = [
   ['libParty', 'Liberal party membership'], ['fasParty', 'Fascist party membership'],
   ['ja', 'Ja! card'], ['nein', 'Nein! card']
 ];
-const artImg = slot => ST.art && ST.art[slot] ? '<img alt="" src="/_blob/' + esc(ST.art[slot]) + '">' : null;
+const artImg = slot => ST.art && ST.art[slot] ? '<img alt="" src="' + esc(ST.art[slot]) + '">' : null;
 const DOVE = c => '<g fill="' + c + '"><path d="M20 60C30 58 38 52 44 44C50 35 60 31 70 35L86 28L79 41C79 57 65 69 48 69C36 69 27 65 20 60Z"/><path d="M22 61L7 71L27 67Z"/></g><path d="M40 52C46 35 58 23 80 16C75 31 67 45 52 56Z" fill="' + c + '" opacity=".72"/><circle cx="71" cy="37" r="1.8" fill="#000"/>';
 const SKULL = c => '<g fill="' + c + '"><path d="M50 12C30 12 18 26 18 43C18 54 24 61 31 65L31 78L69 78L69 65C76 61 82 54 82 43C82 26 70 12 50 12Z"/></g><g fill="#000" opacity=".85"><ellipse cx="38" cy="44" rx="8" ry="9"/><ellipse cx="62" cy="44" rx="8" ry="9"/><path d="M50 52L44 64L56 64Z"/></g><g stroke="#000" stroke-width="2.4" opacity=".8"><path d="M39 70V78M50 70V78M61 70V78"/></g>';
 const HAT = c => '<g fill="' + c + '"><path d="M22 36L50 20L78 36L74 46L26 46Z"/><rect x="26" y="46" width="48" height="6"/><path d="M34 54H66V66C66 76 58 82 50 82C42 82 34 76 34 66Z"/><path d="M20 98C20 80 34 74 50 74C66 74 80 80 80 98Z"/></g><circle cx="50" cy="35" r="4" fill="#000" opacity=".6"/>';
@@ -516,12 +566,12 @@ async function enter(mode) {
   catch (e) {
     console.error(e);
     const perm = e && (e.code === 'invalid_argument' || e.code === 'not_granted');
-    setErr(perm ? 'You do not have permission to play. Ask the page owner to share it with you as a Contributor (or invite you by email).' : 'Could not connect: ' + (e && e.message || e));
+    setErr(perm ? 'Permission denied by the database — check the Firestore rules in README.md.' : 'Could not connect: ' + (e && e.message || e));
   }
 }
 
 async function doEnter(mode, name, pw) {
-  if (!DB) throw new Error('Multiplayer storage is unavailable. Open this page inside claude.ai while signed in.');
+  if (!DB) throw new Error('Online play isn’t set up: Firebase is not configured (or failed to load). See README.md.');
   const pid = ST.pid || await getPid();
   const gid = await hashPw(pw);
   ST.pid = pid; ST.gid = gid; ST.name = name; ST.pw = pw;
@@ -825,11 +875,11 @@ function renderLanding(app) {
       '<div class="row"><button class="pri grow" data-a="join" id="b-join">Join game</button><button class="grow" data-a="create" id="b-create">Create game</button></div>' +
       '<p class="muted small">Create a game with a password, then share the password with 4–9 friends. 5–10 players needed.</p></div>' +
       '<div class="card small"><b>How it works.</b> One player creates the game and hosts it (keep their tab open). Secret roles and policy cards are encrypted so only their owner can read them. ' +
-      'Friends need access to this page (share it as <i>Contributor</i> or invite them by email) and must be signed in.</div>' +
+      'Anyone with the link can join using the password — no accounts needed.</div>' +
       '<div class="row" style="justify-content:center"><button class="ghost" data-a="rules">Rules</button>' + '<button class="ghost" data-a="art" id="b-art" style="display:none">Artwork</button></div>' + footHtml();
     landingBuilt = true;
   }
-  const e = $('#land-err'); if (e) e.innerHTML = (!DB ? '<div class="err">Multiplayer storage isn’t available here. Open this page in claude.ai while signed in.</div>' : '') + (ST.err ? '<div class="err">' + esc(ST.err) + '</div>' : '');
+  const e = $('#land-err'); if (e) e.innerHTML = (!DB ? '<div class="err">Online play isn’t set up: Firebase is not configured (or failed to load). See README.md.</div>' : '') + (ST.err ? '<div class="err">' + esc(ST.err) + '</div>' : '');
   ['b-join', 'b-create'].forEach(id => { const b = $('#' + id); if (b) b.disabled = ST.busy || !DB; });
   const ab = $('#b-art'); if (ab) ab.style.display = ST.canArt ? '' : 'none';
 }
@@ -1071,13 +1121,14 @@ document.addEventListener('keydown', e => {
 /* ================= boot ================= */
 async function boot() {
   render();
+  if (window.__fbReady) await window.__fbReady;
+  ST.art = Object.assign({}, (window.SH_CONFIG && window.SH_CONFIG.art) || {});
   if (!window.claude || !window.claude.use) { render(); return; }
   try { DB = await claude.use('db'); } catch (e) { DB = null; }
   try { USER = await claude.use('user'); } catch (e) { USER = null; }
   try { ASSETS = await claude.use('assets'); ST.canArt = !!ASSETS; } catch (e) { ASSETS = null; }
   render();
   if (!DB) return;
-  try { DB.doc('config/art').onSnapshot(s => { ST.art = s.exists ? s.data() : {}; render(); }, () => {}); } catch (e) {}
   // auto-rejoin after a reload
   try {
     const saved = JSON.parse(lsGet('sh2:last') || 'null');
